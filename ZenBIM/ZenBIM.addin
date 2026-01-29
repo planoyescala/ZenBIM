@@ -1,0 +1,15 @@
+﻿<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>ZenBIM</Name>
+        <Assembly>ZenBIM\ZenBIM.dll</Assembly>
+        <AddInId>B5285056-A119-43D5-B372-E216B3A7B790</AddInId>
+        <FullClassName>ZenBIM.Application</FullClassName>
+        <VendorId>plano y escala</VendorId>
+        <VendorDescription></VendorDescription>
+        <VendorEmail>manuel.planoyescala@gmail.com</VendorEmail>
+    </AddIn>
+    <ManifestSettings>
+        <UseRevitContext>False</UseRevitContext>
+        <ContextName>ZenBIM</ContextName>
+    </ManifestSettings>
+</RevitAddIns>

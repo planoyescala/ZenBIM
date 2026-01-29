@@ -1,0 +1,24 @@
+# Ignorar carpetas de compilación (generan basura y pesan mucho)
+[Bb]in/
+[Oo]bj/
+.vs/
+
+# Ignorar archivos específicos de usuario de Visual Studio
+*.user
+*.suo
+*.userprefs
+
+# Ignorar DLLs de Revit (Propiedad de Autodesk - ILEGAL SUBIRLAS)
+RevitAPI.dll
+RevitAPIUI.dll
+AdWindows.dll
+UIFramework.dll
+
+# Ignorar otros archivos temporales
+*.tmp
+*.log
+Thumbs.db
+.DS_Store
+
+# Ignorar paquetes de Nuget (se descargan solos al compilar)
+packages/

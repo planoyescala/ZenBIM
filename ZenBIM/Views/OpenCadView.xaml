@@ -1,0 +1,143 @@
+﻿<Window x:Class="ZenBIM.Views.OpenCadView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CAD Link Manager | ZenBIM" Height="320" Width="550"
+        WindowStartupLocation="CenterScreen" Topmost="True"
+        ResizeMode="NoResize" WindowStyle="None"
+        AllowsTransparency="True" Background="Transparent">
+
+    <Window.Resources>
+        <LinearGradientBrush x:Key="ZenGradientDetails" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#00C853" Offset="0.0"/>
+            <GradientStop Color="#69F0AE" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="GlassBackground" Color="#FCFCFC"/>
+        <SolidColorBrush x:Key="TextDark" Color="#1F1F1F"/>
+        <SolidColorBrush x:Key="TextGray" Color="#757575"/>
+        <SolidColorBrush x:Key="BorderLight" Color="#E0E0E0"/>
+
+        <Style x:Key="BtnPrimary" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bdr" CornerRadius="12" Background="{StaticResource ZenGradientDetails}" Height="40">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" Color="#00C853" Opacity="0.3" ShadowDepth="2" Direction="270"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.FontWeight="Bold" TextElement.Foreground="White" TextElement.FontSize="12"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bdr" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnGhost" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextGray}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bdr" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{StaticResource BorderLight}" BorderThickness="1" Height="40">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.FontSize="12" TextElement.FontWeight="Medium"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bdr" Property="Background" Value="#F5F5F5"/>
+                                <Setter TargetName="bdr" Property="BorderBrush" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextDark}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{StaticResource GlassBackground}" CornerRadius="20" Margin="10" MouseDown="Window_MouseDown">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="40" Color="Black" Opacity="0.2" ShadowDepth="10"/>
+        </Border.Effect>
+
+        <Grid Margin="25">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <TextBlock Text="CAD Link Manager" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDark}"/>
+
+                    <TextBlock Text="ZenBIM Link Tools" FontSize="12" FontWeight="Bold" Margin="0,2,0,0">
+                        <TextBlock.Foreground>
+                            <StaticResource ResourceKey="ZenGradientDetails"/>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </StackPanel>
+
+                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Content="✕" Click="BtnClose_Click" 
+                        Background="Transparent" BorderThickness="0" Foreground="#BDBDBD" FontSize="16" Cursor="Hand" Width="30" Height="30">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="Transparent">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#D32F2F"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="1" Background="#FFFFFF" CornerRadius="10" Padding="15,10" Margin="0,0,0,25" BorderBrush="{StaticResource BorderLight}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="CAD Path:" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextGray}" Margin="0,0,0,4"/>
+                    <TextBlock Grid.Row="1" x:Name="TxtPath" Text="c:\path\drawing.dwg" 
+                               FontSize="12" Foreground="{StaticResource TextDark}" TextTrimming="CharacterEllipsis" 
+                               ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0" Grid.Column="0" Content="Open DWG" Click="BtnOpenFile_Click" Style="{StaticResource BtnPrimary}" Margin="0,0,0,10"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="Reload DWG" Click="BtnReload_Click" Style="{StaticResource BtnPrimary}" Margin="0,0,0,10">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FFA000" Offset="0.0"/>
+                            <GradientStop Color="#FFD54F" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+
+                <Button Grid.Row="1" Grid.Column="0" Content="Open Folder" Click="BtnOpenFolder_Click" Style="{StaticResource BtnGhost}"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="Copy Path" Click="BtnCopyPath_Click" Style="{StaticResource BtnGhost}"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

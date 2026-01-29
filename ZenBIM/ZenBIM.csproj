@@ -1,0 +1,190 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+ <PropertyGroup>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms> <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <ImplicitUsings>true</ImplicitUsings>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Configurations>Debug R21;Debug R22;Debug R23;Debug R24;Debug R25;Debug R26</Configurations>
+    <Configurations>$(Configurations);Release R21;Release R22;Release R23;Release R24;Release R25;Release R26</Configurations>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+</PropertyGroup>
+
+    <!-- Revit configuration -->
+    <PropertyGroup Condition="$(Configuration.Contains('R21'))">
+        <RevitVersion>2021</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R22'))">
+        <RevitVersion>2022</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R23'))">
+        <RevitVersion>2023</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R24'))">
+        <RevitVersion>2024</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R25'))">
+        <RevitVersion>2025</RevitVersion>
+        <TargetFramework>net8.0-windows</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R26'))">
+        <RevitVersion>2026</RevitVersion>
+        <TargetFramework>net8.0-windows</TargetFramework>
+    </PropertyGroup>
+
+    <!-- Launch configuration -->
+    <PropertyGroup>
+        <StartAction>Program</StartAction>
+        <StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
+        <StartArguments>/language ENG</StartArguments>
+    </PropertyGroup>
+
+    <!-- Build configuration -->
+    <!-- https://github.com/Nice3point/Revit.Build.Tasks -->
+    <PropertyGroup>
+        <IsRepackable>false</IsRepackable>
+        <DeployRevitAddin>true</DeployRevitAddin>
+        <Version>0.0.0.1</Version>
+    </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Resources\Icons\about_16.png" />
+      <None Remove="Resources\Icons\about_16.svg" />
+      <None Remove="Resources\Icons\about_32.png" />
+      <None Remove="Resources\Icons\about_32.svg" />
+      <None Remove="Resources\Icons\about_32_dark.png" />
+      <None Remove="Resources\Icons\ai_16.png" />
+      <None Remove="Resources\Icons\ai_32.png" />
+      <None Remove="Resources\Icons\BatchPrint_16.png" />
+      <None Remove="Resources\Icons\BatchPrint_32.png" />
+      <None Remove="Resources\Icons\clean_about_16.png" />
+      <None Remove="Resources\Icons\clean_about_32.png" />
+      <None Remove="Resources\Icons\Coffe_16.png" />
+      <None Remove="Resources\Icons\Coffe_32.png" />
+      <None Remove="Resources\Icons\color_splasher_16.png" />
+      <None Remove="Resources\Icons\color_splasher_32.png" />
+      <None Remove="Resources\Icons\duplicate_detail_16.png" />
+      <None Remove="Resources\Icons\duplicate_detail_32.png" />
+      <None Remove="Resources\Icons\duplicate_empty_16.png" />
+      <None Remove="Resources\Icons\duplicate_empty_32png.png" />
+      <None Remove="Resources\Icons\duplicate_views_16.png" />
+      <None Remove="Resources\Icons\duplicate_views_32.png" />
+      <None Remove="Resources\Icons\dwg_16.png" />
+      <None Remove="Resources\Icons\dwg_32.png" />
+      <None Remove="Resources\Icons\export_both_16.png" />
+      <None Remove="Resources\Icons\export_both_32.png" />
+      <None Remove="Resources\Icons\export_dwg_16.png" />
+      <None Remove="Resources\Icons\export_dwg_32.png" />
+      <None Remove="Resources\Icons\export_pdf_16.png" />
+      <None Remove="Resources\Icons\export_pdf_32.png" />
+      <None Remove="Resources\Icons\joke_16.png" />
+      <None Remove="Resources\Icons\joke_32.png" />
+      <None Remove="Resources\Icons\legend_16.png" />
+      <None Remove="Resources\Icons\legend_32.png" />
+      <None Remove="Resources\Icons\RenumberSheets_16.png" />
+      <None Remove="Resources\Icons\RenumberSheets_32.png" />
+      <None Remove="Resources\Icons\reorder_16.png" />
+      <None Remove="Resources\Icons\reorder_32.png" />
+      <None Remove="Resources\Icons\rvt_link_16.png" />
+      <None Remove="Resources\Icons\rvt_link_32.png" />
+      <None Remove="Resources\Icons\schedule_export_16.png" />
+      <None Remove="Resources\Icons\schedule_export_32.png" />
+      <None Remove="Resources\Icons\schedule_import_16.png" />
+      <None Remove="Resources\Icons\schedule_import_32.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Revit References -->
+        <PackageReference Include="ClosedXML" Version="0.105.0" />
+        <PackageReference Include="Microsoft.Office.Interop.Excel" Version="16.0.18925.20022" />
+        <PackageReference Include="Mscc.GenerativeAI" Version="3.0.2" />
+        <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="3.0.1" />
+        <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*" />
+        <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*" />
+        <PackageReference Include="Nice3point.Revit.Api.RevitAPI" Version="$(RevitVersion).*" />
+        <PackageReference Include="Nice3point.Revit.Api.RevitAPIUI" Version="$(RevitVersion).*" />
+        <PackageReference Include="System.Net.Http.Json" Version="10.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="RevitAPI">
+        <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
+      </Reference>
+      <Reference Include="RevitAPIUI">
+        <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Resources\Icons\about_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\about_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\BatchPrint_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\BatchPrint_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\Coffe_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\Coffe_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\color_splasher_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\color_splasher_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\dwg_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\dwg_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\legend_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\legend_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\reorder_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\reorder_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\rvt_link_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\rvt_link_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\schedule_export_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\schedule_export_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\schedule_import_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\schedule_import_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command=":: Crear carpetas si no existen [cite: 2025-10-14]&#xD;&#xA;if not exist &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM&quot; mkdir &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM&quot;&#xD;&#xA;if not exist &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM\Resources&quot; mkdir &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM\Resources&quot;&#xD;&#xA;&#xD;&#xA;:: Copiar la DLL y el archivo .addin [cite: 2025-09-28]&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM\&quot;&#xD;&#xA;copy &quot;$(ProjectDir)ZenBIM.addin&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2026\&quot;&#xD;&#xA;&#xD;&#xA;:: Copiar iconos de la carpeta de recursos [cite: 2025-08-08]&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\*&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2026\ZenBIM\Resources\&quot; /Y /S" />
+    </Target>
+
+</Project>
