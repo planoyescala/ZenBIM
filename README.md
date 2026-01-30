@@ -8,6 +8,7 @@ Developed by **plano y escala**.
 ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
 ![Revit Versions](https://img.shields.io/badge/Revit-2022%20|%202023%20|%202024%20|%202025%20|%202026-red.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
+![Downloads](https://img.shields.io/badge/downloads-calculating...-success)
 
 ---
 
@@ -32,7 +33,7 @@ Featuring a modern **ZenGlass** interface (WPF), it brings a clean, Windows 11-s
 
 1.  **Click the button below** to download the installer directly:
     
-    👉 **[Download ZenBIM v1.1.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.1.0.exe)**
+    👉 **[Download ZenBIM v1.1.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.1.0.exe)** 
 
 2.  **Close Revit**.
 3.  **Run the file** (`ZenBIM_Setup_v1.1.0.exe`).
