@@ -1,5 +1,7 @@
 # ZenBIM 🌿
 
+![ZenBIM Logo](logo.png)
+
 **Your Open Source productivity assistant for Autodesk Revit (2022-2026).**
 Developed by **plano y escala**.
 
@@ -43,7 +45,9 @@ Featuring a modern **ZenGlass** interface (WPF), it brings a clean, Windows 11-s
 
 If you enjoy **ZenBIM** and want to support the development of free tools for the community, consider buying us a coffee!
 
-<a href="https://www.buymeacoffee.com/planoyescala" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;"></a>
+<a href="https://www.buymeacoffee.com/planoyescala" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40" width="145">
+</a>
 
 ---
 
