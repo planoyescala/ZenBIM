@@ -24,23 +24,27 @@ using ZenBIM.Core;
 
 namespace ZenBIM.Views
 {
+    // FIX: Removed 'required' for compatibility with Revit 2022-2024
     public class SheetItem
     {
-        public required string SheetNumber { get; set; }
-        public required string SheetName { get; set; }
-        public required ViewSheet Element { get; set; }
+        public string SheetNumber { get; set; } = string.Empty;
+        public string SheetName { get; set; } = string.Empty;
+        public ViewSheet Element { get; set; } = default!;
         public bool IsSelected { get; set; }
         public string PreviewName { get; set; } = "";
     }
 
     public class FilterItem
     {
-        public required string Name { get; set; }
-        public required ElementId Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public ElementId Id { get; set; } = ElementId.InvalidElementId;
         public bool IsCollection { get; set; }
     }
 
-    public class DWGSetupItem { public required string Name { get; set; } }
+    public class DWGSetupItem
+    {
+        public string Name { get; set; } = string.Empty;
+    }
 
     public class NamingRulePreset
     {
@@ -98,12 +102,16 @@ namespace ZenBIM.Views
             var sets = new FilteredElementCollector(_doc).OfClass(typeof(ViewSheetSet)).Cast<ViewSheetSet>().OrderBy(s => s.Name).ToList();
             foreach (var set in sets) filters.Add(new FilterItem { Name = $"Set: {set.Name}", Id = set.Id, IsCollection = false });
 
+            // Protected block to prevent errors in older versions
             try
             {
+#if REVIT2025_OR_GREATER
                 var collections = new FilteredElementCollector(_doc).OfClass(typeof(SheetCollection)).Cast<SheetCollection>().OrderBy(s => s.Name).ToList();
                 foreach (var col in collections) filters.Add(new FilterItem { Name = $"Collection: {col.Name}", Id = col.Id, IsCollection = true });
+#endif
             }
             catch { }
+
             ComboFilter.ItemsSource = filters;
             ComboFilter.SelectedIndex = 0;
         }
@@ -130,7 +138,11 @@ namespace ZenBIM.Views
             if (ComboFilter.SelectedItem is FilterItem selectedFilter && selectedFilter.Id != ElementId.InvalidElementId)
             {
                 if (selectedFilter.IsCollection)
+                {
+#if REVIT2025_OR_GREATER
                     collector = collector.Where(s => s.SheetCollectionId == selectedFilter.Id);
+#endif
+                }
                 else
                 {
                     var set = _doc.GetElement(selectedFilter.Id) as ViewSheetSet;
@@ -220,7 +232,6 @@ namespace ZenBIM.Views
             if (PanelPDF == null || PanelDWG == null) return;
             int index = ComboFormat.SelectedIndex;
 
-            // CORREGIDO: Uso explícito de System.Windows.Visibility para evitar CS0176
             PanelPDF.Visibility = (index == 0 || index == 2) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
             PanelDWG.Visibility = (index == 1 || index == 2) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 
@@ -274,7 +285,6 @@ namespace ZenBIM.Views
                 try
                 {
                     File.WriteAllText(dialog.FileName, JsonSerializer.Serialize(preset, new JsonSerializerOptions { WriteIndented = true }));
-                    // CORREGIDO: Uso explícito de System.Windows.MessageBox
                     System.Windows.MessageBox.Show("Preset saved!", "ZenBIM", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)

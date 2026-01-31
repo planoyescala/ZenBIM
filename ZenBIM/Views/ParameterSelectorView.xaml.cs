@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Controls; // Main Namespace for WPF controls
 using System.Windows.Input;
 using Autodesk.Revit.DB;
 
@@ -23,10 +23,11 @@ namespace ZenBIM.Views
 {
     public partial class ParameterSelectorView : Window
     {
+        // Class compatible with all Revit versions
         public class ParamItem
         {
-            public required string Name { get; set; }
-            public required string Group { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Group { get; set; } = string.Empty;
         }
 
         private List<ParamItem> _allParamsSource = new List<ParamItem>();
@@ -37,104 +38,145 @@ namespace ZenBIM.Views
         public string ResultRule { get; private set; } = string.Empty;
         public string ResultSeparator { get; private set; } = "-";
 
-        // Constructor modificado para recibir la regla actual
         public ParameterSelectorView(Document doc, string currentSeparator, string currentRule)
         {
             InitializeComponent();
 
-            if (TxtSeparator != null) TxtSeparator.Text = currentSeparator;
-
+            // --- FIX START: Connect Data Collections to UI ListBoxes ---
             ListAvailable.ItemsSource = AvailableParams;
             ListSelected.ItemsSource = SelectedParams;
+            // --- FIX END ---
 
             LoadParameters(doc);
-            PreloadCurrentRule(currentRule, currentSeparator);
+
+            if (!string.IsNullOrEmpty(currentSeparator))
+            {
+                TxtSeparator.Text = currentSeparator;
+            }
+
+            ParseCurrentRule(currentRule);
         }
 
         private void LoadParameters(Document doc)
         {
             _allParamsSource.Clear();
 
-            // 1. Sheet Parameters
-            var sheet = new FilteredElementCollector(doc).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().FirstOrDefault();
-            if (sheet != null)
+            // 1. Built-in Sheet Parameters
+            AddParam("Sheet Number", "Built-in");
+            AddParam("Sheet Name", "Built-in");
+
+            // 2. Project Info Parameters
+            AddParam("Project Number", "Project Info");
+            AddParam("Project Name", "Project Info");
+
+            // 3. Sheet Parameters (Instance)
+            var sheetCollector = new FilteredElementCollector(doc)
+                .OfClass(typeof(ViewSheet))
+                .FirstElement();
+
+            if (sheetCollector != null)
             {
-                foreach (Parameter p in sheet.Parameters)
+                foreach (Parameter p in sheetCollector.Parameters)
                 {
-                    if (!_allParamsSource.Any(x => x.Name == p.Definition.Name))
-                        _allParamsSource.Add(new ParamItem { Name = p.Definition.Name, Group = "Sheet" });
+                    if (p.Definition != null)
+                    {
+                        AddParam(p.Definition.Name, "Sheet Parameter");
+                    }
                 }
             }
 
-            // Fallbacks
-            if (!_allParamsSource.Any(x => x.Name == "Sheet Number")) _allParamsSource.Add(new ParamItem { Name = "Sheet Number", Group = "Sheet" });
-            if (!_allParamsSource.Any(x => x.Name == "Sheet Name")) _allParamsSource.Add(new ParamItem { Name = "Sheet Name", Group = "Sheet" });
-
-            // 2. Project Info Parameters
+            // 4. Project Information Parameters
             if (doc.ProjectInformation != null)
             {
                 foreach (Parameter p in doc.ProjectInformation.Parameters)
                 {
-                    if (!_allParamsSource.Any(x => x.Name == p.Definition.Name))
-                        _allParamsSource.Add(new ParamItem { Name = p.Definition.Name, Group = "Project" });
-                }
-            }
-            if (!_allParamsSource.Any(x => x.Name == "Project Number")) _allParamsSource.Add(new ParamItem { Name = "Project Number", Group = "Project" });
-
-            _allParamsSource = _allParamsSource.OrderBy(x => x.Name).ToList();
-            RefreshAvailableList();
-        }
-
-        private void PreloadCurrentRule(string rule, string separator)
-        {
-            if (string.IsNullOrWhiteSpace(rule)) return;
-
-            try
-            {
-                // Simple parsing: split by separator, strip {}
-                string[] tokens = rule.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var t in tokens)
-                {
-                    string clean = t.Trim('{', '}');
-                    // Add only if meaningful
-                    if (!string.IsNullOrWhiteSpace(clean))
+                    if (p.Definition != null)
                     {
-                        SelectedParams.Add(clean);
+                        AddParam(p.Definition.Name, "Project Information");
                     }
                 }
-                RefreshAvailableList();
             }
-            catch { /* Ignore parsing errors */ }
+
+            // Sort and Remove Duplicates
+            _allParamsSource = _allParamsSource
+                .GroupBy(x => x.Name)
+                .Select(g => g.First())
+                .OrderBy(x => x.Name)
+                .ToList();
+        }
+
+        private void AddParam(string name, string group)
+        {
+            _allParamsSource.Add(new ParamItem { Name = name, Group = group });
+        }
+
+        private void ParseCurrentRule(string rule)
+        {
+            SelectedParams.Clear();
+            if (string.IsNullOrEmpty(rule)) return;
+
+            // Simple parser: assumes format {Param1}-{Param2}
+            var parts = rule.Split(new[] { "}{", "{", "}" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in parts)
+            {
+                if (part == TxtSeparator.Text) continue;
+                var match = _allParamsSource.FirstOrDefault(p => p.Name == part);
+                if (match != null)
+                {
+                    SelectedParams.Add(match.Name);
+                }
+            }
+            RefreshAvailableList();
         }
 
         private void RefreshAvailableList()
         {
-            if (TxtSearch == null || ComboSource == null) return;
-
             AvailableParams.Clear();
-            string query = TxtSearch.Text?.ToLower() ?? "";
-            string filterMode = (ComboSource.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "All";
+            string search = TxtSearch.Text?.ToLower() ?? "";
+
+            int catIndex = ComboSource != null ? ComboSource.SelectedIndex : 0;
 
             foreach (var p in _allParamsSource)
             {
-                if (!p.Name.ToLower().Contains(query)) continue;
+                // 1. Search Filter
+                if (!p.Name.ToLower().Contains(search)) continue;
+
+                // 2. Already Selected Filter
                 if (SelectedParams.Contains(p.Name)) continue;
 
-                if (filterMode == "Sheet Parameters" && p.Group != "Sheet") continue;
-                if (filterMode == "Project Info Parameters" && p.Group != "Project") continue;
+                // 3. Category Filter
+                bool categoryMatch = true;
+                if (catIndex == 1) // Sheet Parameters
+                {
+                    categoryMatch = (p.Group == "Sheet Parameter" || p.Group == "Built-in");
+                }
+                else if (catIndex == 2) // Project Info
+                {
+                    categoryMatch = (p.Group == "Project Information" || p.Group == "Project Info");
+                }
 
-                AvailableParams.Add(p.Name);
+                if (categoryMatch)
+                {
+                    AvailableParams.Add(p.Name);
+                }
             }
         }
 
-        // --- INTERACTION ---
-        private void OnSearchChanged(object sender, TextChangedEventArgs e) => RefreshAvailableList();
-        private void OnSourceChanged(object sender, SelectionChangedEventArgs e) => RefreshAvailableList();
+        // --- EVENT HANDLERS ---
+
+        private void OnSourceChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshAvailableList();
+        }
+
+        private void OnSearchChanged(object sender, TextChangedEventArgs e)
+        {
+            RefreshAvailableList();
+        }
 
         private void OnAddClick(object sender, RoutedEventArgs e)
         {
-            var itemToAdd = ListAvailable.SelectedItem as string;
-            if (!string.IsNullOrEmpty(itemToAdd))
+            if (ListAvailable.SelectedItem is string itemToAdd)
             {
                 SelectedParams.Add(itemToAdd);
                 RefreshAvailableList();
@@ -143,10 +185,14 @@ namespace ZenBIM.Views
 
         private void OnRemoveClick(object sender, RoutedEventArgs e)
         {
-            var itemToRemove = ListSelected.SelectedItem as string;
-            if (!string.IsNullOrEmpty(itemToRemove))
+            if (sender is System.Windows.Controls.Button btn && btn.DataContext is string itemToRemove)
             {
                 SelectedParams.Remove(itemToRemove);
+                RefreshAvailableList();
+            }
+            else if (ListSelected.SelectedItem is string selectedItemToRemove && !string.IsNullOrEmpty(selectedItemToRemove))
+            {
+                SelectedParams.Remove(selectedItemToRemove);
                 RefreshAvailableList();
             }
         }
@@ -185,6 +231,9 @@ namespace ZenBIM.Views
             if (e.ChangedButton == MouseButton.Left) this.DragMove();
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e) => this.Close();
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

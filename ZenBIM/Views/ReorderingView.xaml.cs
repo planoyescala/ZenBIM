@@ -18,7 +18,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-// --- FIX: Importamos el espacio de nombres donde está el Handler ---
 using ZenBIM.Commands;
 
 namespace ZenBIM.Views
@@ -74,7 +73,10 @@ namespace ZenBIM.Views
         private void CmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CmbCategory.SelectedItem is not Category selectedCat) return;
-            _isRoomCategorySelected = (selectedCat.Id.Value == (long)BuiltInCategory.OST_Rooms);
+
+            // Universal Room detection (Revit 2022-2026 compatible).
+            Category roomCat = Category.GetCategory(_doc, BuiltInCategory.OST_Rooms);
+            _isRoomCategorySelected = (selectedCat.Id == roomCat.Id);
 
             if (_isRoomCategorySelected)
             {
@@ -112,7 +114,7 @@ namespace ZenBIM.Views
                 if (!p.IsReadOnly && (p.StorageType == StorageType.String || p.StorageType == StorageType.Integer)) writeableParams.Add(p);
             }
             CmbTargetParam.ItemsSource = writeableParams.OrderBy(p => p.Definition.Name).ToList();
-            var defaultParam = writeableParams.FirstOrDefault(p => p.Definition.Name == "Mark" || p.Definition.Name == "Marca" || p.Definition.Name == "Number" || p.Definition.Name == "Número");
+            var defaultParam = writeableParams.FirstOrDefault(p => p.Definition.Name == "Mark" || p.Definition.Name == "Number");
             if (defaultParam != null) CmbTargetParam.SelectedItem = defaultParam;
             else if (writeableParams.Count > 0) CmbTargetParam.SelectedIndex = 0;
         }
@@ -144,7 +146,9 @@ namespace ZenBIM.Views
             {
                 if (_isRoomCategorySelected && !string.IsNullOrEmpty(filterParamName) && filterValue != null)
                 {
-                    if (GetParamValue(elem, filterParamName) != filterValue) continue;
+                    // FIX: Added '!' (null-forgiving operator) to suppress CS8604 warning.
+                    // We know filterParamName is not null here due to the !string.IsNullOrEmpty check above.
+                    if (GetParamValue(elem, filterParamName!) != filterValue) continue;
                 }
 
                 XYZ loc = XYZ.Zero;
@@ -156,9 +160,21 @@ namespace ZenBIM.Views
             }
 
             int sortIndex = CmbSortMethod.SelectedIndex;
-            if (sortIndex == 0) rawList = rawList.OrderBy(x => x.LocationPoint.X).ThenBy(x => x.LocationPoint.Y).ToList();
-            else if (sortIndex == 1) rawList = rawList.OrderBy(x => x.LocationPoint.Y).ThenBy(x => x.LocationPoint.X).ToList();
-            else rawList = rawList.OrderBy(x => x.Element!.Id.Value).ToList();
+
+            // SORTING LOGIC
+            if (sortIndex == 0) // X then Y
+            {
+                rawList = rawList.OrderBy(x => x.LocationPoint.X).ThenBy(x => x.LocationPoint.Y).ToList();
+            }
+            else if (sortIndex == 1) // Y then X
+            {
+                rawList = rawList.OrderBy(x => x.LocationPoint.Y).ThenBy(x => x.LocationPoint.X).ToList();
+            }
+            else
+            {
+                // Sort by ID (Creation Order) compatible with 2022-2026.
+                rawList = rawList.OrderBy(x => x.Element!.Id).ToList();
+            }
 
             // Padding logic
             string prefix = TxtPrefix.Text ?? "";
@@ -226,6 +242,7 @@ namespace ZenBIM.Views
 
             try
             {
+                // Note: Since we use ShowDialog() in the Command, this Transaction works safely.
                 using (Transaction t = new Transaction(_doc, "ZenBIM: Auto Reorder"))
                 {
                     t.Start();
@@ -247,9 +264,9 @@ namespace ZenBIM.Views
                     RecalculatePreview(null, null);
                 }
             }
-            catch (Autodesk.Revit.Exceptions.InvalidOperationException)
+            catch (Autodesk.Revit.Exceptions.InvalidOperationException ex)
             {
-                System.Windows.MessageBox.Show("Context Error: To apply automatic changes in this modeless window, we need to convert this to an External Event as well. (Pending implementation).");
+                System.Windows.MessageBox.Show("Transaction Error: " + ex.Message);
             }
         }
 

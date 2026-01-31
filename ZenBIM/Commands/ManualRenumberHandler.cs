@@ -18,12 +18,10 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using ZenBIM.Views;
 
-// CORRECCIÓN: Namespace cambiado a ZenBIM.Commands para solucionar el error CS0246
 namespace ZenBIM.Commands
 {
     public class ManualRenumberHandler : IExternalEventHandler
     {
-        // Nullability fixed
         public Window MainWindow { get; set; } = default!;
         public Category TargetCategory { get; set; } = default!;
         public Parameter TargetParameter { get; set; } = default!;
@@ -95,6 +93,8 @@ namespace ZenBIM.Commands
                 try
                 {
                     overlay.SetStatus("Select element... (ESC for menu)", false);
+
+                    // Keep UI responsive
                     System.Windows.Forms.Application.DoEvents();
 
                     Reference r = uidoc.Selection.PickObject(ObjectType.Element, new CategorySelectionFilter(TargetCategory.Id), "Select to number (ESC to Pause)");
@@ -122,6 +122,7 @@ namespace ZenBIM.Commands
                 }
                 catch (Autodesk.Revit.Exceptions.OperationCanceledException)
                 {
+                    // User pressed ESC
                     isPaused = true;
                     overlay.SetStatus("⏸ PAUSED", true);
 
@@ -161,11 +162,16 @@ namespace ZenBIM.Commands
         {
             private ElementId _catId;
             public CategorySelectionFilter(ElementId catId) { _catId = catId; }
+
             public bool AllowElement(Element elem)
             {
                 if (elem?.Category == null) return false;
-                return elem.Category.Id.Value == _catId.Value;
+
+                // FIX: Direct comparison works in all versions (2022-2026).
+                // Do not use .Value (only 2024+) or .IntegerValue (deprecated).
+                return elem.Category.Id == _catId;
             }
+
             public bool AllowReference(Reference reference, XYZ position) => false;
         }
     }

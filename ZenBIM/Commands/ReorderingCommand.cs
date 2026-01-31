@@ -11,19 +11,27 @@
 //-----------------------------------------------------------------------------------------
 
 using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Nice3point.Revit.Toolkit.External;
 using ZenBIM.Views;
 
 namespace ZenBIM.Commands
 {
     [Transaction(TransactionMode.Manual)]
-    public class ReorderingCommand : ExternalCommand
+    public class ReorderingCommand : IExternalCommand
     {
-        public override void Execute()
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            var view = new ReorderingView(ExternalCommandData);
-            view.Show();
+            // Initialize the window
+            var view = new ReorderingView(commandData);
+
+            // CRITICAL FIX: Use ShowDialog() instead of Show().
+            // This opens the window as "Modal", blocking Revit until closed.
+            // This is required for the "Auto Apply" button (Transactions) to work without
+            // needing a complex ExternalEvent handler for the auto-mode.
+            view.ShowDialog();
+
+            return Result.Succeeded;
         }
     }
 }
