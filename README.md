@@ -8,7 +8,8 @@ Developed by **plano y escala**.
 ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
 ![Revit Versions](https://img.shields.io/badge/Revit-2022%20|%202023%20|%202024%20|%202025%20|%202026-red.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
-![Downloads](https://img.shields.io/badge/downloads-calculating...-success)
+
+[![Download Installer](https://img.shields.io/badge/⬇_Download_Installer-ZenBIM_v1.2.0-blue?style=for-the-badge&logo=windows)](https://github.com/planoyescala/ZenBIM/releases/download/v1.2.0/ZenBIM_Setup_v1.2.0.exe)
 
 ---
 
@@ -16,7 +17,7 @@ Developed by **plano y escala**.
 **ZenBIM** is designed with a clear philosophy: **Simplicity and Focus**.
 Featuring a modern **ZenGlass** interface (WPF), it brings a clean, Windows 11-style aesthetic to your BIM workflows, reducing visual noise and enhancing productivity.
 
-## ✨ Features (v1.1.0)
+## ✨ Features (v1.2.0)
 
 * **🖨️ Batch Print:** Print multiple sheets to PDF or DWG effortlessly. Includes smart naming rules and automatic folder organization.
 * **🎨 Color Splasher:** Apply color overrides to elements based on parameter values with a sleek, interactive interface.
@@ -33,7 +34,7 @@ Featuring a modern **ZenGlass** interface (WPF), it brings a clean, Windows 11-s
 
 1.  **Click the button below** to download the installer directly:
     
-    👉 **[Download ZenBIM v1.1.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.1.0.exe)** 
+    👉 **[Download ZenBIM v1.1.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.2.0.exe)** 
 
 2.  **Close Revit**.
 3.  **Run the file** (`ZenBIM_Setup_v1.1.0.exe`).
@@ -62,4 +63,5 @@ We believe in open knowledge. If you use this code to build something great, you
 ---
 <p align="center">
   <i>Built with ❤️ and C# for the Revit Community.</i>
+
 </p>
