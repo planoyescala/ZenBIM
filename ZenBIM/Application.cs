@@ -13,8 +13,12 @@
 using Nice3point.Revit.Toolkit.External;
 using ZenBIM.Commands;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Events;
 using Autodesk.Revit.Attributes;
 using System;
+using System.Reflection; // Required for Assembly location
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging; // Required for BitmapImage in StackedItems
 
 namespace ZenBIM
 {
@@ -31,18 +35,41 @@ namespace ZenBIM
             var panelMiscellaneous = Application.CreatePanel("Miscellaneous", "ZenBIM");
 
             // ====================================================
-            // PANEL 1: plano y escala
+            // PANEL 1: plano y escala (Layout: Large + Stacked)
             // ====================================================
+
+            // 1. Large Button: About
             panelPlano.AddPushButton<AboutCommand>("About")
                 .SetLargeImage(GetResourcePath("about_32.png"))
                 .SetImage(GetResourcePath("about_16.png"))
                 .SetToolTip("Information about ZenBIM.");
 
-            // Nuevo botón para Buy Me a Coffee
-            panelPlano.AddPushButton<DonateCommand>("Support")
-                .SetLargeImage(GetResourcePath("Coffe_32.png"))
-                .SetImage(GetResourcePath("Coffe_16.png"))
-                .SetToolTip("Support plano y escala on Buy Me a Coffee.");
+            // 2. Stacked Column: Update, Support & GitHub
+            string assemblyPath = Assembly.GetExecutingAssembly().Location;
+
+            // Create Data for "Update"
+            var updateData = new PushButtonData("cmdUpdate", "Update", assemblyPath, typeof(CheckUpdateCommand).FullName)
+            {
+                ToolTip = "Check for ZenBIM updates.",
+                Image = new BitmapImage(new Uri(GetResourcePath("update_16.png"), UriKind.Relative))
+            };
+
+            // Create Data for "Support"
+            var supportData = new PushButtonData("cmdSupport", "Support", assemblyPath, typeof(DonateCommand).FullName)
+            {
+                ToolTip = "Support plano y escala on Buy Me a Coffee.",
+                Image = new BitmapImage(new Uri(GetResourcePath("Coffe_16.png"), UriKind.Relative))
+            };
+
+            // Create Data for "GitHub"
+            var githubData = new PushButtonData("cmdGithub", "Repo", assemblyPath, typeof(GithubCommand).FullName)
+            {
+                ToolTip = "Visit ZenBIM on GitHub.",
+                Image = new BitmapImage(new Uri(GetResourcePath("github_16.png"), UriKind.Relative))
+            };
+
+            // Add them as a stack of 3 (Max allowed by Revit API)
+            panelPlano.AddStackedItems(updateData, supportData, githubData);
 
             // ====================================================
             // PANEL 2: Drawing Set
@@ -97,6 +124,21 @@ namespace ZenBIM
                 .SetLargeImage(GetResourcePath("reorder_32.png"))
                 .SetImage(GetResourcePath("reorder_16.png"))
                 .SetToolTip("Advanced element renumbering tool.");
+
+            // ====================================================
+            // IDLING EVENT
+            // ====================================================
+            this.Application.Idling += OnIdling;
+        }
+
+        // Async void to allow awaiting the task on the UI thread
+        private async void OnIdling(object? sender, IdlingEventArgs e)
+        {
+            this.Application.Idling -= OnIdling; // Unsubscribe immediately
+
+            // PRODUCTION MODE: silentMode: true
+            // This ensures NO window appears if the user is up-to-date.
+            await CheckUpdateCommand.RunAutoCheckAsync(silentMode: true);
         }
 
         private string GetResourcePath(string iconName)
@@ -104,6 +146,9 @@ namespace ZenBIM
             return $"/ZenBIM;component/Resources/Icons/{iconName}";
         }
 
-        public override void OnShutdown() { }
+        public override void OnShutdown()
+        {
+            this.Application.Idling -= OnIdling;
+        }
     }
 }

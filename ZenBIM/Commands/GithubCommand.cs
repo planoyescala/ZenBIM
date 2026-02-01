@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------------------
-// <copyright file="AboutCommand.cs" company="plano y escala">
+// <copyright file="GithubCommand.cs" company="plano y escala">
 // Copyright (c) 2026 plano y escala.
 //
 // ZenBIM is free software: you can redistribute it and/or modify
@@ -10,22 +10,20 @@
 // <author>plano y escala</author>
 //-----------------------------------------------------------------------------------------
 
+using System.Diagnostics;
 using Autodesk.Revit.Attributes;
 using Nice3point.Revit.Toolkit.External;
-using ZenBIM.Views; // Required to access the new View
 
 namespace ZenBIM.Commands
 {
     [UsedImplicitly]
     [Transaction(TransactionMode.Manual)]
-    public class AboutCommand : ExternalCommand
+    public class GithubCommand : ExternalCommand
     {
         public override void Execute()
         {
-            // Instead of a native TaskDialog, we now open the custom WPF Window
-            // which supports hyperlinks and matches the ZenGlass style.
-            var aboutView = new AboutView();
-            aboutView.ShowDialog();
+            // Abre la web del proyecto
+            Process.Start(new ProcessStartInfo("https://github.com/planoyescala/ZenBIM") { UseShellExecute = true });
         }
     }
 }

@@ -46,7 +46,7 @@
     <PropertyGroup>
         <IsRepackable>false</IsRepackable>
         <DeployRevitAddin>true</DeployRevitAddin>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <ApplicationIcon>logo.ico</ApplicationIcon>
         <PackageIcon>logo.png</PackageIcon>
         <Authors>plano y escala</Authors>
@@ -82,6 +82,8 @@
       <None Remove="Resources\Icons\export_dwg_32.png" />
       <None Remove="Resources\Icons\export_pdf_16.png" />
       <None Remove="Resources\Icons\export_pdf_32.png" />
+      <None Remove="Resources\Icons\github_16.png" />
+      <None Remove="Resources\Icons\github_32.png" />
       <None Remove="Resources\Icons\joke_16.png" />
       <None Remove="Resources\Icons\joke_32.png" />
       <None Remove="Resources\Icons\legend_16.png" />
@@ -96,6 +98,8 @@
       <None Remove="Resources\Icons\schedule_export_32.png" />
       <None Remove="Resources\Icons\schedule_import_16.png" />
       <None Remove="Resources\Icons\schedule_import_32.png" />
+      <None Remove="Resources\Icons\update_16.png" />
+      <None Remove="Resources\Icons\update_32.png" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="logo.ico" />
@@ -160,6 +164,12 @@
       <Resource Include="Resources\Icons\dwg_32.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
+      <Resource Include="Resources\Icons\github_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\github_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
       <Resource Include="Resources\Icons\legend_16.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
@@ -188,6 +198,12 @@
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
       <Resource Include="Resources\Icons\schedule_import_32.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\update_16.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Resources\Icons\update_32.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
     </ItemGroup>
