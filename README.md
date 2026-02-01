@@ -34,10 +34,10 @@ Featuring a modern **ZenGlass** interface (WPF), it brings a clean, Windows 11-s
 
 1.  **Click the button below** to download the installer directly:
     
-    👉 **[Download ZenBIM v1.1.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.2.0.exe)** 
+    👉 **[Download ZenBIM v1.2.0 Installer (.exe)](https://gitlab.com/-/project/78111942/uploads/761ac3c04f53f03b6a858c94f55405ae/ZenBIM_Setup_v1.2.0.exe)** 
 
 2.  **Close Revit**.
-3.  **Run the file** (`ZenBIM_Setup_v1.1.0.exe`).
+3.  **Run the file** (`ZenBIM_Setup_v1.2.0.exe`).
     * *Note:* It automatically detects and installs on **Revit 2022, 2023, 2024, 2025, and 2026**.
 4.  Open Revit and look for the **ZenBIM** tab!
 
@@ -65,3 +65,4 @@ We believe in open knowledge. If you use this code to build something great, you
   <i>Built with ❤️ and C# for the Revit Community.</i>
 
 </p>
+
